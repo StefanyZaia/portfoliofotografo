@@ -1,0 +1,484 @@
+main {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+main::before,
+main::after {
+  position: fixed;
+  content: "";
+  pointer-events: none;
+  z-index: -1;
+}
+
+main::before {
+  inset: 0;
+  background:
+    radial-gradient(circle at 18% 14%, rgba(255, 255, 255, 0.96) 0 3%, transparent 9%),
+    radial-gradient(circle at 78% 8%, rgba(171, 255, 246, 0.8) 0 4%, transparent 12%),
+    radial-gradient(circle at 12% 76%, rgba(82, 205, 255, 0.46), transparent 25%),
+    linear-gradient(180deg, #bdf6ff 0%, #eefcff 32%, #9fe9d2 66%, #56baf7 100%);
+}
+
+main::after {
+  width: 42vw;
+  height: 42vw;
+  right: -10vw;
+  top: 14vh;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.95), transparent 10%),
+    radial-gradient(circle at 52% 58%, rgba(255, 255, 255, 0.32), transparent 18%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.58), rgba(48, 204, 255, 0.2) 48%, rgba(23, 138, 230, 0.4));
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow:
+    inset -28px -36px 70px rgba(0, 101, 178, 0.2),
+    inset 18px 18px 50px rgba(255, 255, 255, 0.7),
+    0 35px 90px rgba(0, 112, 178, 0.26);
+  opacity: 0.72;
+}
+
+.hero {
+  width: 100%;
+  min-height: 92vh;
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 72px 8% 120px;
+  color: #08395f;
+  isolation: isolate;
+}
+
+.hero::before {
+  position: absolute;
+  content: "";
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(115deg, rgba(255, 255, 255, 0.95) 0 34%, rgba(255, 255, 255, 0.22) 58%, transparent 78%),
+    url("https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1800&q=80");
+  background-size: cover;
+  background-position: center;
+  clip-path: ellipse(120% 88% at 45% 0%);
+}
+
+.hero::after {
+  position: absolute;
+  content: "";
+  left: 8%;
+  right: 8%;
+  bottom: 28px;
+  height: 118px;
+  z-index: -1;
+  border-radius: 999px 999px 0 0;
+  background:
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.18) 0 1px, transparent 1px 72px),
+    linear-gradient(180deg, rgba(143, 247, 255, 0.78), rgba(0, 132, 222, 0.38));
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  filter: blur(0.2px);
+  box-shadow: inset 0 20px 34px rgba(255, 255, 255, 0.45);
+}
+
+.heroContent {
+  max-width: 760px;
+  padding: 34px;
+  border: 1px solid rgba(255, 255, 255, 0.74);
+  border-radius: 30px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.84), rgba(198, 248, 255, 0.42));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 28px 70px rgba(0, 113, 181, 0.22);
+  backdrop-filter: blur(18px) saturate(150%);
+}
+
+.heroLabel,
+.sectionLabel {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 2.6px;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.heroLabel,
+.sectionLabel,
+.albumInfo span {
+  color: #0077c8;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.75);
+}
+
+.hero h1 {
+  max-width: 720px;
+  font-size: clamp(2.7rem, 6vw, 5.9rem);
+  line-height: 0.96;
+  margin: 16px 0;
+  color: #05406d;
+}
+
+.hero span {
+  display: block;
+  max-width: 560px;
+  color: #1c5871;
+  font-size: 1.18rem;
+  line-height: 1.65;
+}
+
+.heroButtons,
+.contacts {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.heroButtons {
+  margin-top: 32px;
+}
+
+.heroButtons a,
+.contacts a,
+.backLink,
+.albumInfo button,
+.albumForm button,
+.adminAlbumItem button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 12px 22px;
+  border: 1px solid rgba(255, 255, 255, 0.78);
+  border-radius: 999px;
+  color: #053a68;
+  font-weight: 800;
+  text-decoration: none;
+  cursor: pointer;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(171, 247, 255, 0.74) 48%, rgba(51, 176, 240, 0.84));
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.86),
+    inset 0 -10px 18px rgba(0, 112, 187, 0.16),
+    0 12px 26px rgba(0, 120, 188, 0.2);
+  transition: transform 180ms ease, box-shadow 180ms ease, filter 180ms ease;
+}
+
+.heroButtons a:last-child,
+.contacts a:nth-child(2),
+.backLink {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(208, 255, 219, 0.74) 48%, rgba(99, 213, 121, 0.82));
+}
+
+.heroButtons a:hover,
+.contacts a:hover,
+.backLink:hover,
+.albumInfo button:hover,
+.albumForm button:hover,
+.adminAlbumItem button:hover {
+  transform: translateY(-3px);
+  filter: saturate(1.12) brightness(1.04);
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.9),
+    inset 0 -10px 18px rgba(0, 112, 187, 0.14),
+    0 18px 34px rgba(0, 120, 188, 0.26);
+}
+
+.albumsSection {
+  width: 100%;
+  padding: 88px 8%;
+  position: relative;
+}
+
+.albumsSection h2,
+footer h2,
+.adminTopbar h1 {
+  font-size: clamp(2rem, 4vw, 3.6rem);
+  line-height: 1;
+  margin: 10px 0 42px;
+  color: #06426f;
+}
+
+.emptyState,
+.albumCard,
+.albumForm,
+.adminAlbums,
+.adminAlbumItem {
+  border: 1px solid rgba(255, 255, 255, 0.76);
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.84), rgba(207, 250, 255, 0.48));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.92),
+    0 22px 52px rgba(0, 114, 184, 0.18);
+  backdrop-filter: blur(18px) saturate(145%);
+}
+
+.emptyState {
+  max-width: 780px;
+  padding: 46px;
+  border-radius: 28px;
+  text-align: center;
+}
+
+.emptyState h3 {
+  margin: 0 0 8px;
+  color: #063c68;
+  font-size: 1.5rem;
+}
+
+.emptyState p,
+.albumInfo p,
+.adminEmpty,
+.adminAlbumItem p {
+  color: #315f71;
+  line-height: 1.55;
+}
+
+.albumsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 28px;
+}
+
+.albumCard {
+  position: relative;
+  overflow: hidden;
+  border-radius: 28px;
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.albumCard::before {
+  position: absolute;
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(115deg, rgba(255, 255, 255, 0.72), transparent 34%);
+  z-index: 1;
+}
+
+.albumCard:hover {
+  transform: translateY(-8px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    0 34px 70px rgba(0, 104, 180, 0.25);
+}
+
+.albumCard img {
+  width: 100%;
+  height: 320px;
+  object-fit: cover;
+  display: block;
+}
+
+.albumInfo {
+  position: relative;
+  z-index: 2;
+  padding: 24px;
+}
+
+.albumInfo h3,
+.albumForm h2,
+.adminAlbums h2,
+.adminAlbumItem h3 {
+  color: #063c68;
+}
+
+.albumInfo h3 {
+  margin: 10px 0;
+  font-size: 1.4rem;
+}
+
+.albumMeta {
+  font-weight: 800;
+}
+
+footer {
+  position: relative;
+  width: 100%;
+  padding: 86px 8%;
+  color: #063c68;
+  text-align: center;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.56), rgba(147, 242, 255, 0.68)),
+    radial-gradient(circle at 50% 110%, rgba(22, 135, 219, 0.42), transparent 45%);
+  border-top: 1px solid rgba(255, 255, 255, 0.72);
+}
+
+footer p {
+  max-width: 640px;
+  margin: 0 auto 24px;
+  line-height: 1.7;
+  color: #24536b;
+}
+
+.contacts {
+  justify-content: center;
+  margin-top: 28px;
+}
+
+.adminPage {
+  min-height: 100vh;
+  padding: 44px 8% 76px;
+}
+
+.adminTopbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 38px;
+}
+
+.adminTopbar h1 {
+  margin-bottom: 0;
+}
+
+.adminContent {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+  gap: 30px;
+}
+
+.albumForm,
+.adminAlbums {
+  padding: 30px;
+  border-radius: 28px;
+}
+
+.albumForm {
+  display: grid;
+  gap: 16px;
+}
+
+.albumForm h2,
+.adminAlbums h2 {
+  margin-top: 0;
+}
+
+.albumForm input,
+.albumForm textarea {
+  width: 100%;
+  border: 1px solid rgba(45, 163, 222, 0.36);
+  padding: 14px 16px;
+  border-radius: 18px;
+  color: #063c68;
+  font-size: 1rem;
+  font-family: inherit;
+  outline: none;
+  background: rgba(255, 255, 255, 0.78);
+  box-shadow: inset 0 2px 10px rgba(0, 107, 177, 0.08);
+}
+
+.albumForm textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.albumForm input:focus,
+.albumForm textarea:focus {
+  border-color: #00a8ef;
+  box-shadow:
+    inset 0 2px 10px rgba(0, 107, 177, 0.08),
+    0 0 0 4px rgba(93, 222, 255, 0.28);
+}
+
+.adminAlbumList {
+  display: grid;
+  gap: 16px;
+}
+
+.adminAlbumItem {
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr);
+  gap: 16px;
+  align-items: center;
+  padding: 12px;
+  border-radius: 20px;
+}
+
+.adminAlbumItem img {
+  width: 120px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 15px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85);
+}
+
+.adminAlbumItem h3 {
+  margin: 0 0 6px;
+}
+
+.adminAlbumItem p {
+  margin: 0 0 10px;
+}
+
+.adminAlbumItem button {
+  color: #4d0818;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 215, 223, 0.78) 48%, rgba(245, 95, 126, 0.84));
+}
+
+@media (max-width: 900px) {
+  main::after {
+    width: 70vw;
+    height: 70vw;
+  }
+
+  .albumsGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .adminContent {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .hero {
+    min-height: 86vh;
+    padding: 42px 6% 98px;
+  }
+
+  .heroContent,
+  .emptyState,
+  .albumForm,
+  .adminAlbums {
+    padding: 24px;
+    border-radius: 24px;
+  }
+
+  .hero h1 {
+    font-size: 2.7rem;
+  }
+
+  .hero span {
+    font-size: 1.04rem;
+  }
+
+  .albumsSection,
+  footer,
+  .adminPage {
+    padding-left: 6%;
+    padding-right: 6%;
+  }
+
+  .albumsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .albumCard img {
+    height: 260px;
+  }
+
+  .adminTopbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .adminAlbumItem {
+    grid-template-columns: 1fr;
+  }
+
+  .adminAlbumItem img {
+    width: 100%;
+    height: 180px;
+  }
+}

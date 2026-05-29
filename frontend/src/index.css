@@ -1,0 +1,32 @@
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  min-height: 100vh;
+  margin: 0;
+}
+
+body {
+  font-family: "Trebuchet MS", "Segoe UI", Arial, Helvetica, sans-serif;
+  background: #bdf6ff;
+  color: #063c68;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+::selection {
+  color: #053a68;
+  background: rgba(157, 255, 215, 0.82);
+}
