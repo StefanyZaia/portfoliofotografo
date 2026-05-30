@@ -4,6 +4,7 @@ import {
   addPhotosToAlbum,
   createAlbum,
   deleteAlbum,
+  deletePhoto,
   getAlbums,
 } from "../services/api";
 
@@ -13,6 +14,7 @@ function Admin() {
   const [salvando, setSalvando] = useState(false);
   const [enviandoFotos, setEnviandoFotos] = useState(false);
   const [erro, setErro] = useState("");
+  const [albumFotosId, setAlbumFotosId] = useState("");
 
   const [form, setForm] = useState({
     titulo: "",
@@ -28,6 +30,10 @@ function Admin() {
   });
 
   const navigate = useNavigate();
+
+  const albumSelecionado = albuns.find(
+    (album) => String(album.id) === String(albumFotosId)
+  );
 
   function sair() {
     localStorage.removeItem("@portfolio:auth");
@@ -150,6 +156,22 @@ function Admin() {
     }
   }
 
+  async function excluirFoto(id) {
+    const confirmar = window.confirm("Tem certeza que deseja excluir esta foto?");
+
+    if (!confirmar) {
+      return;
+    }
+
+    try {
+      setErro("");
+      await deletePhoto(id);
+      await carregarAlbuns();
+    } catch (error) {
+      setErro("Erro ao excluir foto.");
+    }
+  }
+
   return (
     <main className="adminPage">
       <header className="adminTopbar">
@@ -261,6 +283,48 @@ function Admin() {
               {enviandoFotos ? "Enviando..." : "Adicionar fotos"}
             </button>
           </form>
+
+          <div className="albumForm">
+            <h2>Gerenciar fotos do álbum</h2>
+
+            <select
+              value={albumFotosId}
+              onChange={(e) => setAlbumFotosId(e.target.value)}
+            >
+              <option value="">Selecione um álbum</option>
+
+              {albuns.map((album) => (
+                <option value={album.id} key={album.id}>
+                  {album.title}
+                </option>
+              ))}
+            </select>
+
+            {!albumSelecionado ? (
+              <p className="adminEmpty">
+                Selecione um álbum para visualizar as fotos cadastradas.
+              </p>
+            ) : !albumSelecionado.photos || albumSelecionado.photos.length === 0 ? (
+              <p className="adminEmpty">
+                Este álbum ainda não possui fotos cadastradas.
+              </p>
+            ) : (
+              <div className="adminPhotoGrid">
+                {albumSelecionado.photos.map((photo) => (
+                  <div className="adminPhotoItem" key={photo.id}>
+                    <img
+                      src={photo.imageUrl}
+                      alt={`Foto do álbum ${albumSelecionado.title}`}
+                    />
+
+                    <button type="button" onClick={() => excluirFoto(photo.id)}>
+                      Excluir foto
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="adminAlbums">
@@ -278,6 +342,7 @@ function Admin() {
 
                   <div>
                     <h3>{album.title}</h3>
+
                     <p>
                       {album.date} • {album.location}
                     </p>

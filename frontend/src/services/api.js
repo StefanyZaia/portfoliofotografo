@@ -45,3 +45,11 @@ export async function deleteAlbum(id) {
 
   return handleResponse(response);
 }
+
+export async function deletePhoto(id) {
+  const response = await fetch(`${API_URL}/photos/${id}`, {
+    method: "DELETE",
+  });
+
+  return handleResponse(response);
+}

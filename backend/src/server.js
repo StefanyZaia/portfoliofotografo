@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import albumRoutes from "./routes/albumRoutes.js";
+import photoRoutes from "./routes/photoRoutes.js";
 
 dotenv.config();
 
@@ -19,6 +20,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/albums", albumRoutes);
+app.use("/photos", photoRoutes);
 
 const PORT = process.env.PORT || 3333;
 
