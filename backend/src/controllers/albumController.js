@@ -2,83 +2,171 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
+function getBaseUrl(req) {
+  return `${req.protocol}://${req.get("host")}`;
+}
 
-// Controladores para gerenciar álbuns
 export async function listAlbums(req, res) {
-    try {
-        const albums = await prisma.album.findMany({
-            // Ordena os álbuns do mais recente para o mais antigo
-            orderBy: {
-                createdAt: "desc"
-            }
-        });
+  try {
+    const albums = await prisma.album.findMany({
+      orderBy: {
+        createdAt: "desc",
+      },
+      include: {
+        photos: true,
+      },
+    });
 
-        return res.json(albums);
-    } catch (error) {
-        // Em caso de erro, retorna uma resposta de erro com detalhes
-        return res.status(500).json({
-            message: "Erro ao listar álbuns.",
-            error: error.message
-        });
-    }
+    return res.json(albums);
+  } catch (error) {
+    return res.status(500).json({
+      message: "Erro ao listar álbuns.",
+      error: error.message,
+    });
+  }
 }
 
-// Controlador para criar um novo álbum
+export async function getAlbumById(req, res) {
+  try {
+    const { id } = req.params;
+
+    const album = await prisma.album.findUnique({
+      where: {
+        id: Number(id),
+      },
+      include: {
+        photos: {
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
+      },
+    });
+
+    if (!album) {
+      return res.status(404).json({
+        message: "Álbum não encontrado.",
+      });
+    }
+
+    return res.json(album);
+  } catch (error) {
+    return res.status(500).json({
+      message: "Erro ao buscar álbum.",
+      error: error.message,
+    });
+  }
+}
+
 export async function createAlbum(req, res) {
-    try {
-        const { title, date, location, description } = req.body;
+  try {
+    const { title, date, location, description } = req.body;
 
-        if (!title || !date || !location || !description) {
-            return res.status(400).json({
-                message: "Preencha todos os campos obrigatórios.",
-            });
-        }
-
-        if (!req.file) {
-            return res.status(400).json({
-                message: "Envie uma imagem de capa para o álbum.",
-            });
-        }
-
-        const coverImage = `http://localhost:3333/uploads/${req.file.filename}`;
-
-        const album = await prisma.album.create({
-            data: {
-                title,
-                date,
-                location,
-                description,
-                coverImage,
-            },
-        });
-
-        return res.status(201).json(album);
-    } catch (error) {
-        return res.status(500).json({
-            message: "Erro ao criar álbum.",
-            error: error.message,
-        });
+    if (!title || !date || !location || !description) {
+      return res.status(400).json({
+        message: "Preencha todos os campos obrigatórios.",
+      });
     }
+
+    if (!req.file) {
+      return res.status(400).json({
+        message: "Envie uma imagem de capa para o álbum.",
+      });
+    }
+
+    const coverImage = `${getBaseUrl(req)}/uploads/${req.file.filename}`;
+
+    const album = await prisma.album.create({
+      data: {
+        title,
+        date,
+        location,
+        description,
+        coverImage,
+      },
+    });
+
+    return res.status(201).json(album);
+  } catch (error) {
+    return res.status(500).json({
+      message: "Erro ao criar álbum.",
+      error: error.message,
+    });
+  }
 }
 
-// Controlador para excluir um álbum existente
-export async function deleteAlbum(req, res) {
-    try {
-        const { id } = req.params;
+export async function addPhotosToAlbum(req, res) {
+  try {
+    const { id } = req.params;
 
-        await prisma.album.delete({
-            where: {
-                id: Number(id)
-            }
-        });
+    const album = await prisma.album.findUnique({
+      where: {
+        id: Number(id),
+      },
+    });
 
-        return res.json({
-            message: "Álbum excluído com sucesso."
-        });
-    } catch (error) {
-        return res.status(500).json({
-            message: "Erro ao excluir álbum.",
-            error: error.message
-        });
+    if (!album) {
+      return res.status(404).json({
+        message: "Álbum não encontrado.",
+      });
     }
+
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({
+        message: "Envie pelo menos uma foto.",
+      });
+    }
+
+    const baseUrl = getBaseUrl(req);
+
+    const photosData = req.files.map((file) => ({
+      imageUrl: `${baseUrl}/uploads/${file.filename}`,
+      albumId: Number(id),
+    }));
+
+    await prisma.photo.createMany({
+      data: photosData,
+    });
+
+    const updatedAlbum = await prisma.album.findUnique({
+      where: {
+        id: Number(id),
+      },
+      include: {
+        photos: {
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
+      },
+    });
+
+    return res.status(201).json(updatedAlbum);
+  } catch (error) {
+    return res.status(500).json({
+      message: "Erro ao adicionar fotos ao álbum.",
+      error: error.message,
+    });
+  }
+}
+
+export async function deleteAlbum(req, res) {
+  try {
+    const { id } = req.params;
+
+    await prisma.album.delete({
+      where: {
+        id: Number(id),
+      },
+    });
+
+    return res.json({
+      message: "Álbum excluído com sucesso.",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Erro ao excluir álbum.",
+      error: error.message,
+    });
+  }
 }

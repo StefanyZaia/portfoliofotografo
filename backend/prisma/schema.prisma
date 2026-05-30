@@ -15,4 +15,14 @@ model Album {
   description String
   coverImage  String
   createdAt   DateTime @default(now())
+
+  photos      Photo[]
+}
+
+model Photo {
+  id        Int      @id @default(autoincrement())
+  imageUrl  String
+  albumId   Int
+  album     Album    @relation(fields: [albumId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
 }

@@ -565,3 +565,153 @@ footer p {
 .logoutButton {
   padding: 12px 20px;
 }
+
+.albumButton {
+  display: inline-block;
+  margin-top: 12px;
+  border: 1px solid rgba(110, 231, 255, 0.18);
+  background: linear-gradient(135deg, #6ee7ff, #4ea8ff);
+  color: #07111f;
+  padding: 12px 18px;
+  border-radius: 999px;
+  text-decoration: none;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.albumDetailsPage {
+  width: 100%;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top, rgba(78, 168, 255, 0.12), transparent 30%),
+    linear-gradient(180deg, #050811 0%, #0b1120 45%, #070b14 100%);
+  color: #f5f7ff;
+}
+
+.albumHero {
+  position: relative;
+  min-height: 75vh;
+  display: flex;
+  align-items: end;
+  overflow: hidden;
+}
+
+.albumHero img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.albumHero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(rgba(5, 8, 17, 0.2), rgba(5, 8, 17, 0.92)),
+    radial-gradient(circle at 20% 30%, rgba(110, 231, 255, 0.15), transparent 25%);
+}
+
+.albumHeroOverlay {
+  position: relative;
+  z-index: 1;
+  padding: 80px 8%;
+  max-width: 900px;
+}
+
+.albumHeroOverlay h1 {
+  font-size: clamp(2.7rem, 6vw, 6rem);
+  line-height: 0.95;
+  margin: 16px 0;
+}
+
+.albumDetailsMeta {
+  color: #6ee7ff;
+  font-weight: bold;
+}
+
+.albumDetailsDescription {
+  max-width: 680px;
+  color: #b8c2d9;
+  line-height: 1.8;
+  font-size: 1.1rem;
+}
+
+.albumBackLink {
+  display: inline-block;
+  margin-bottom: 28px;
+  color: #f5f7ff;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.gallerySection {
+  padding: 80px 8%;
+}
+
+.gallerySection .sectionLabel {
+  color: #6ee7ff;
+}
+
+.gallerySection h2 {
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  margin: 8px 0 40px;
+}
+
+.photoGallery {
+  columns: 3 280px;
+  column-gap: 20px;
+}
+
+.photoItem {
+  margin: 0 0 20px;
+  break-inside: avoid;
+  border-radius: 24px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.photoItem img {
+  width: 100%;
+  display: block;
+  transition: 0.3s;
+}
+
+.photoItem:hover img {
+  transform: scale(1.03);
+}
+
+.adminForms {
+  display: grid;
+  gap: 24px;
+}
+
+.albumForm select {
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  padding: 14px 16px;
+  border-radius: 16px;
+  font-size: 1rem;
+  font-family: inherit;
+  outline: none;
+}
+
+.adminAlbumActions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.smallLink {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.08);
+  color: #f5f7ff;
+  padding: 9px 14px;
+  border-radius: 999px;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 0.9rem;
+}

@@ -1,11 +1,17 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { createAlbum, deleteAlbum, getAlbums } from "../services/api";
+import {
+  addPhotosToAlbum,
+  createAlbum,
+  deleteAlbum,
+  getAlbums,
+} from "../services/api";
 
 function Admin() {
   const [albuns, setAlbuns] = useState([]);
   const [loading, setLoading] = useState(true);
   const [salvando, setSalvando] = useState(false);
+  const [enviandoFotos, setEnviandoFotos] = useState(false);
   const [erro, setErro] = useState("");
 
   const [form, setForm] = useState({
@@ -14,6 +20,11 @@ function Admin() {
     local: "",
     descricao: "",
     capa: null,
+  });
+
+  const [photoForm, setPhotoForm] = useState({
+    albumId: "",
+    photos: [],
   });
 
   const navigate = useNavigate();
@@ -81,6 +92,48 @@ function Admin() {
     }
   }
 
+  async function handleUploadPhotos(event) {
+    event.preventDefault();
+
+    if (!photoForm.albumId) {
+      setErro("Selecione um álbum para adicionar as fotos.");
+      return;
+    }
+
+    if (!photoForm.photos || photoForm.photos.length === 0) {
+      setErro("Selecione pelo menos uma foto.");
+      return;
+    }
+
+    const formElement = event.currentTarget;
+
+    try {
+      setEnviandoFotos(true);
+      setErro("");
+
+      const photosFormData = new FormData();
+
+      photoForm.photos.forEach((photo) => {
+        photosFormData.append("photos", photo);
+      });
+
+      await addPhotosToAlbum(photoForm.albumId, photosFormData);
+
+      setPhotoForm({
+        albumId: "",
+        photos: [],
+      });
+
+      formElement.reset();
+
+      await carregarAlbuns();
+    } catch (error) {
+      setErro(error.message || "Erro ao adicionar fotos ao álbum.");
+    } finally {
+      setEnviandoFotos(false);
+    }
+  }
+
   async function excluirAlbum(id) {
     const confirmar = window.confirm("Tem certeza que deseja excluir este álbum?");
 
@@ -124,52 +177,91 @@ function Admin() {
       )}
 
       <section className="adminContent">
-        <form className="albumForm" onSubmit={handleSubmit}>
-          <h2>Cadastrar novo álbum</h2>
+        <div className="adminForms">
+          <form className="albumForm" onSubmit={handleSubmit}>
+            <h2>Cadastrar novo álbum</h2>
 
-          <input
-            type="text"
-            placeholder="Nome do evento ou ensaio"
-            value={form.titulo}
-            onChange={(e) => setForm({ ...form, titulo: e.target.value })}
-            required
-          />
+            <input
+              type="text"
+              placeholder="Nome do evento ou ensaio"
+              value={form.titulo}
+              onChange={(e) => setForm({ ...form, titulo: e.target.value })}
+              required
+            />
 
-          <input
-            type="date"
-            value={form.data}
-            onChange={(e) => setForm({ ...form, data: e.target.value })}
-            required
-          />
+            <input
+              type="date"
+              value={form.data}
+              onChange={(e) => setForm({ ...form, data: e.target.value })}
+              required
+            />
 
-          <input
-            type="text"
-            placeholder="Local"
-            value={form.local}
-            onChange={(e) => setForm({ ...form, local: e.target.value })}
-            required
-          />
+            <input
+              type="text"
+              placeholder="Local"
+              value={form.local}
+              onChange={(e) => setForm({ ...form, local: e.target.value })}
+              required
+            />
 
-          <input
-            type="file"
-            accept="image/jpeg,image/png,image/webp"
-            onChange={(e) =>
-              setForm({ ...form, capa: e.target.files[0] || null })
-            }
-            required
-          />
+            <input
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              onChange={(e) =>
+                setForm({ ...form, capa: e.target.files[0] || null })
+              }
+              required
+            />
 
-          <textarea
-            placeholder="Descrição do álbum"
-            value={form.descricao}
-            onChange={(e) => setForm({ ...form, descricao: e.target.value })}
-            required
-          />
+            <textarea
+              placeholder="Descrição do álbum"
+              value={form.descricao}
+              onChange={(e) => setForm({ ...form, descricao: e.target.value })}
+              required
+            />
 
-          <button type="submit" disabled={salvando}>
-            {salvando ? "Salvando..." : "Cadastrar álbum"}
-          </button>
-        </form>
+            <button type="submit" disabled={salvando}>
+              {salvando ? "Salvando..." : "Cadastrar álbum"}
+            </button>
+          </form>
+
+          <form className="albumForm" onSubmit={handleUploadPhotos}>
+            <h2>Adicionar fotos ao álbum</h2>
+
+            <select
+              value={photoForm.albumId}
+              onChange={(e) =>
+                setPhotoForm({ ...photoForm, albumId: e.target.value })
+              }
+              required
+            >
+              <option value="">Selecione um álbum</option>
+
+              {albuns.map((album) => (
+                <option value={album.id} key={album.id}>
+                  {album.title}
+                </option>
+              ))}
+            </select>
+
+            <input
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              multiple
+              onChange={(e) =>
+                setPhotoForm({
+                  ...photoForm,
+                  photos: Array.from(e.target.files),
+                })
+              }
+              required
+            />
+
+            <button type="submit" disabled={enviandoFotos}>
+              {enviandoFotos ? "Enviando..." : "Adicionar fotos"}
+            </button>
+          </form>
+        </div>
 
         <div className="adminAlbums">
           <h2>Álbuns cadastrados</h2>
@@ -190,9 +282,20 @@ function Admin() {
                       {album.date} • {album.location}
                     </p>
 
-                    <button onClick={() => excluirAlbum(album.id)}>
-                      Excluir
-                    </button>
+                    <p>
+                      {album.photos?.length || 0} foto
+                      {(album.photos?.length || 0) === 1 ? "" : "s"} no álbum
+                    </p>
+
+                    <div className="adminAlbumActions">
+                      <Link to={`/albuns/${album.id}`} className="smallLink">
+                        Ver álbum
+                      </Link>
+
+                      <button onClick={() => excluirAlbum(album.id)}>
+                        Excluir
+                      </button>
+                    </div>
                   </div>
                 </article>
               ))}
