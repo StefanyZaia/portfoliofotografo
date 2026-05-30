@@ -1,13 +1,18 @@
 import multer from "multer";
 import path from "path";
+import fs from "fs";
 
-// Configuração do multer para armazenamento de arquivos
+const uploadFolder = path.resolve("uploads");
+
+if (!fs.existsSync(uploadFolder)) {
+  fs.mkdirSync(uploadFolder, { recursive: true });
+}
+
 const storage = multer.diskStorage({
   destination: (req, file, callback) => {
-    callback(null, "uploads/");
+    callback(null, uploadFolder);
   },
 
-  // Gera um nome único para cada arquivo enviado
   filename: (req, file, callback) => {
     const uniqueName = `${Date.now()}-${Math.round(
       Math.random() * 1e9
@@ -17,7 +22,6 @@ const storage = multer.diskStorage({
   },
 });
 
-// Filtro para aceitar apenas arquivos de imagem
 function fileFilter(req, file, callback) {
   const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
 
@@ -28,7 +32,6 @@ function fileFilter(req, file, callback) {
   }
 }
 
-// Exporta a configuração do multer para ser usada nas rotas de upload
 export const upload = multer({
   storage,
   fileFilter,
