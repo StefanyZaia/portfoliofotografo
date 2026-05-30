@@ -3,12 +3,17 @@ import cors from "cors";
 import dotenv from "dotenv";
 import albumRoutes from "./routes/albumRoutes.js";
 import photoRoutes from "./routes/photoRoutes.js";
+import authRoutes from "./routes/authRoutes.js";
 
 dotenv.config();
 
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL || "http://localhost:5173",
+  })
+);
 app.use(express.json());
 
 app.use("/uploads", express.static("uploads"));
@@ -21,6 +26,7 @@ app.get("/", (req, res) => {
 
 app.use("/albums", albumRoutes);
 app.use("/photos", photoRoutes);
+app.use("/auth", authRoutes);
 
 const PORT = process.env.PORT || 3333;
 

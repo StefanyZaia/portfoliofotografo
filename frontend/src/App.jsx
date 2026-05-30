@@ -6,9 +6,9 @@ import AlbumDetails from "./paginas/AlbumDetails";
 import "./App.css";
 
 function ProtectedRoute({ children }) {
-  const isAuthenticated = localStorage.getItem("@portfolio:auth") === "true";
+  const token = localStorage.getItem("@portfolio:token");
 
-  if (!isAuthenticated) {
+  if (!token) {
     return <Navigate to="/admin/login" replace />;
   }
 

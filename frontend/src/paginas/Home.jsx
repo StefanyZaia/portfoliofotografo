@@ -101,19 +101,19 @@ function Home() {
 
                 <div className="contacts">
                     <a
-                        href="https://wa.me/5599999999999"
+                        href="https://wa.me/5567996894596"
                         target="_blank"
                         rel="noreferrer"
                     >
                         WhatsApp
                     </a>
 
-                    <a href="mailto:contato@email.com">
+                    <a href="mailto:jr.nacanichi.p@gmail.com">
                         E-mail
                     </a>
 
                     <a
-                        href="https://instagram.com/"
+                        href="https://www.instagram.com/naka.nshi?igsh=MXBtOXg2enFxOW1tNg=="
                         target="_blank"
                         rel="noreferrer"
                     >

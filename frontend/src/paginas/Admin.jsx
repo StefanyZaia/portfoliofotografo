@@ -39,7 +39,7 @@ function Admin() {
   );
 
   function sair() {
-    localStorage.removeItem("@portfolio:auth");
+    localStorage.removeItem("@portfolio:token");
     navigate("/admin/login");
   }
 
