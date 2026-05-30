@@ -1,14 +1,10 @@
 import { PrismaClient } from "@prisma/client";
+import {
+  deleteImageFromCloudinary,
+  uploadBufferToCloudinary,
+} from "../config/cloudinary.js";
 
 const prisma = new PrismaClient();
-
-function getBaseUrl(req) {
-  if (process.env.PUBLIC_API_URL) {
-    return process.env.PUBLIC_API_URL.replace(/\/$/, "");
-  }
-
-  return `${req.protocol}://${req.get("host")}`;
-}
 
 export async function listAlbums(req, res) {
   try {
@@ -17,7 +13,11 @@ export async function listAlbums(req, res) {
         createdAt: "desc",
       },
       include: {
-        photos: true,
+        photos: {
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
       },
     });
 
@@ -78,7 +78,10 @@ export async function createAlbum(req, res) {
       });
     }
 
-    const coverImage = `${getBaseUrl(req)}/uploads/${req.file.filename}`;
+    const uploadedCover = await uploadBufferToCloudinary(
+      req.file.buffer,
+      "portfoliofotografo/capas"
+    );
 
     const album = await prisma.album.create({
       data: {
@@ -86,7 +89,11 @@ export async function createAlbum(req, res) {
         date,
         location,
         description,
-        coverImage,
+        coverImage: uploadedCover.secure_url,
+        coverImagePublicId: uploadedCover.public_id,
+      },
+      include: {
+        photos: true,
       },
     });
 
@@ -121,10 +128,15 @@ export async function addPhotosToAlbum(req, res) {
       });
     }
 
-    const baseUrl = getBaseUrl(req);
+    const uploadedPhotos = await Promise.all(
+      req.files.map((file) =>
+        uploadBufferToCloudinary(file.buffer, "portfoliofotografo/fotos")
+      )
+    );
 
-    const photosData = req.files.map((file) => ({
-      imageUrl: `${baseUrl}/uploads/${file.filename}`,
+    const photosData = uploadedPhotos.map((uploadedPhoto) => ({
+      imageUrl: uploadedPhoto.secure_url,
+      publicId: uploadedPhoto.public_id,
       albumId: Number(id),
     }));
 
@@ -185,7 +197,17 @@ export async function updateAlbum(req, res) {
     };
 
     if (req.file) {
-      data.coverImage = `${getBaseUrl(req)}/uploads/${req.file.filename}`;
+      if (album.coverImagePublicId) {
+        await deleteImageFromCloudinary(album.coverImagePublicId);
+      }
+
+      const uploadedCover = await uploadBufferToCloudinary(
+        req.file.buffer,
+        "portfoliofotografo/capas"
+      );
+
+      data.coverImage = uploadedCover.secure_url;
+      data.coverImagePublicId = uploadedCover.public_id;
     }
 
     const updatedAlbum = await prisma.album.update({
@@ -214,6 +236,35 @@ export async function updateAlbum(req, res) {
 export async function deleteAlbum(req, res) {
   try {
     const { id } = req.params;
+
+    const album = await prisma.album.findUnique({
+      where: {
+        id: Number(id),
+      },
+      include: {
+        photos: true,
+      },
+    });
+
+    if (!album) {
+      return res.status(404).json({
+        message: "Álbum não encontrado.",
+      });
+    }
+
+    if (album.coverImagePublicId) {
+      await deleteImageFromCloudinary(album.coverImagePublicId);
+    }
+
+    await Promise.all(
+      album.photos.map((photo) => {
+        if (photo.publicId) {
+          return deleteImageFromCloudinary(photo.publicId);
+        }
+
+        return Promise.resolve();
+      })
+    );
 
     await prisma.album.delete({
       where: {

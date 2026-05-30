@@ -4,31 +4,25 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-
-model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  password  String
-  createdAt DateTime @default(now())
 }
 
 model Album {
-  id          Int      @id @default(autoincrement())
-  title       String
-  date        String
-  location    String
-  description String
-  coverImage  String
-  createdAt   DateTime @default(now())
+  id                 Int      @id @default(autoincrement())
+  title              String
+  date               String
+  location           String
+  description        String
+  coverImage         String
+  coverImagePublicId String?
+  createdAt          DateTime @default(now())
 
-  photos      Photo[]
+  photos             Photo[]
 }
 
 model Photo {
   id        Int      @id @default(autoincrement())
   imageUrl  String
+  publicId  String?
   albumId   Int
   album     Album    @relation(fields: [albumId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
