@@ -1,14 +1,15 @@
 import { Router } from "express";
+import { upload } from "../config/multer.js";
 import {
   createAlbum,
   listAlbums,
-  deleteAlbum
+  deleteAlbum,
 } from "../controllers/albumController.js";
 
 const router = Router();
 
 router.get("/", listAlbums);
-router.post("/", createAlbum);
+router.post("/", upload.single("coverImage"), createAlbum);
 router.delete("/:id", deleteAlbum);
 
 export default router;

@@ -1,47 +1,100 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { createAlbum, deleteAlbum, getAlbums } from "../services/api";
 
 function Admin() {
-  const [albuns, setAlbuns] = useState(() => {
-    const albunsSalvos = localStorage.getItem("@portfolio:albuns");
-    return albunsSalvos ? JSON.parse(albunsSalvos) : [];
-  });
+  const [albuns, setAlbuns] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [salvando, setSalvando] = useState(false);
+  const [erro, setErro] = useState("");
 
   const [form, setForm] = useState({
     titulo: "",
     data: "",
     local: "",
     descricao: "",
-    capa: "",
+    capa: null,
   });
 
-  function salvarAlbuns(novosAlbuns) {
-    setAlbuns(novosAlbuns);
-    localStorage.setItem("@portfolio:albuns", JSON.stringify(novosAlbuns));
+  const navigate = useNavigate();
+
+  function sair() {
+    localStorage.removeItem("@portfolio:auth");
+    navigate("/admin/login");
   }
 
-  function handleSubmit(event) {
+  async function carregarAlbuns() {
+    try {
+      setErro("");
+      const data = await getAlbums();
+      setAlbuns(data);
+    } catch (error) {
+      setErro("Não foi possível carregar os álbuns.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    carregarAlbuns();
+  }, []);
+
+  async function handleSubmit(event) {
     event.preventDefault();
 
-    const novoAlbum = {
-      id: Date.now(),
-      ...form,
-    };
+    if (!form.capa) {
+      setErro("Selecione uma imagem de capa para o álbum.");
+      return;
+    }
 
-    salvarAlbuns([...albuns, novoAlbum]);
+    const formElement = event.currentTarget;
 
-    setForm({
-      titulo: "",
-      data: "",
-      local: "",
-      descricao: "",
-      capa: "",
-    });
+    try {
+      setSalvando(true);
+      setErro("");
+
+      const albumFormData = new FormData();
+
+      albumFormData.append("title", form.titulo);
+      albumFormData.append("date", form.data);
+      albumFormData.append("location", form.local);
+      albumFormData.append("description", form.descricao);
+      albumFormData.append("coverImage", form.capa);
+
+      await createAlbum(albumFormData);
+
+      setForm({
+        titulo: "",
+        data: "",
+        local: "",
+        descricao: "",
+        capa: null,
+      });
+
+      formElement.reset();
+
+      await carregarAlbuns();
+    } catch (error) {
+      setErro(error.message || "Erro ao cadastrar álbum.");
+    } finally {
+      setSalvando(false);
+    }
   }
 
-  function excluirAlbum(id) {
-    const albunsAtualizados = albuns.filter((album) => album.id !== id);
-    salvarAlbuns(albunsAtualizados);
+  async function excluirAlbum(id) {
+    const confirmar = window.confirm("Tem certeza que deseja excluir este álbum?");
+
+    if (!confirmar) {
+      return;
+    }
+
+    try {
+      setErro("");
+      await deleteAlbum(id);
+      await carregarAlbuns();
+    } catch (error) {
+      setErro("Erro ao excluir álbum.");
+    }
   }
 
   return (
@@ -52,10 +105,23 @@ function Admin() {
           <h1>Gerenciar álbuns</h1>
         </div>
 
-        <Link to="/" className="backLink">
-          Ver site
-        </Link>
+        <div className="adminActions">
+          <Link to="/" className="backLink">
+            Ver site
+          </Link>
+
+          <button type="button" className="logoutButton" onClick={sair}>
+            Sair
+          </button>
+        </div>
       </header>
+
+      {erro && (
+        <div className="emptyState">
+          <h3>Atenção</h3>
+          <p>{erro}</p>
+        </div>
+      )}
 
       <section className="adminContent">
         <form className="albumForm" onSubmit={handleSubmit}>
@@ -85,10 +151,11 @@ function Admin() {
           />
 
           <input
-            type="text"
-            placeholder="URL da imagem de capa"
-            value={form.capa}
-            onChange={(e) => setForm({ ...form, capa: e.target.value })}
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            onChange={(e) =>
+              setForm({ ...form, capa: e.target.files[0] || null })
+            }
             required
           />
 
@@ -99,23 +166,30 @@ function Admin() {
             required
           />
 
-          <button type="submit">Cadastrar álbum</button>
+          <button type="submit" disabled={salvando}>
+            {salvando ? "Salvando..." : "Cadastrar álbum"}
+          </button>
         </form>
 
         <div className="adminAlbums">
           <h2>Álbuns cadastrados</h2>
 
-          {albuns.length === 0 ? (
+          {loading ? (
+            <p className="adminEmpty">Carregando álbuns...</p>
+          ) : albuns.length === 0 ? (
             <p className="adminEmpty">Nenhum álbum cadastrado ainda.</p>
           ) : (
             <div className="adminAlbumList">
               {albuns.map((album) => (
                 <article className="adminAlbumItem" key={album.id}>
-                  <img src={album.capa} alt={album.titulo} />
+                  <img src={album.coverImage} alt={album.title} />
 
                   <div>
-                    <h3>{album.titulo}</h3>
-                    <p>{album.data} • {album.local}</p>
+                    <h3>{album.title}</h3>
+                    <p>
+                      {album.date} • {album.location}
+                    </p>
+
                     <button onClick={() => excluirAlbum(album.id)}>
                       Excluir
                     </button>

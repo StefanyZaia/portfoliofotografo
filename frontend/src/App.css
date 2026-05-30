@@ -482,3 +482,86 @@ footer p {
     height: 180px;
   }
 }
+
+.loginPage {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 8%;
+}
+
+.loginCard {
+  width: 100%;
+  max-width: 480px;
+  padding: 40px;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(14px);
+}
+
+.loginCard h1 {
+  margin: 8px 0 16px;
+  font-size: clamp(2rem, 4vw, 3rem);
+}
+
+.loginCard p {
+  color: #b8c2d9;
+  line-height: 1.6;
+}
+
+.loginForm {
+  display: grid;
+  gap: 16px;
+  margin-top: 28px;
+}
+
+.loginForm input {
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.06);
+  color: #f5f7ff;
+  padding: 14px 16px;
+  border-radius: 16px;
+  font-size: 1rem;
+  outline: none;
+}
+
+.loginForm input::placeholder {
+  color: #8f9ab3;
+}
+
+.loginForm input:focus {
+  border-color: #6ee7ff;
+}
+
+.loginForm button,
+.logoutButton {
+  border: none;
+  background: linear-gradient(135deg, #6ee7ff, #4ea8ff);
+  color: #07111f;
+  padding: 14px 20px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.loginError {
+  color: #ff8f8f;
+  font-size: 0.9rem;
+}
+
+.adminActions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.logoutButton {
+  padding: 12px 20px;
+}
