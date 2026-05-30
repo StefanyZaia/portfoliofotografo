@@ -150,6 +150,63 @@ export async function addPhotosToAlbum(req, res) {
   }
 }
 
+export async function updateAlbum(req, res) {
+  try {
+    const { id } = req.params;
+    const { title, date, location, description } = req.body;
+
+    const album = await prisma.album.findUnique({
+      where: {
+        id: Number(id),
+      },
+    });
+
+    if (!album) {
+      return res.status(404).json({
+        message: "Álbum não encontrado.",
+      });
+    }
+
+    if (!title || !date || !location || !description) {
+      return res.status(400).json({
+        message: "Preencha todos os campos obrigatórios.",
+      });
+    }
+
+    const data = {
+      title,
+      date,
+      location,
+      description,
+    };
+
+    if (req.file) {
+      data.coverImage = `${getBaseUrl(req)}/uploads/${req.file.filename}`;
+    }
+
+    const updatedAlbum = await prisma.album.update({
+      where: {
+        id: Number(id),
+      },
+      data,
+      include: {
+        photos: {
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
+      },
+    });
+
+    return res.json(updatedAlbum);
+  } catch (error) {
+    return res.status(500).json({
+      message: "Erro ao atualizar álbum.",
+      error: error.message,
+    });
+  }
+}
+
 export async function deleteAlbum(req, res) {
   try {
     const { id } = req.params;

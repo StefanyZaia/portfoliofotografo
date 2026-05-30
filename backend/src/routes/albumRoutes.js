@@ -5,6 +5,7 @@ import {
   listAlbums,
   getAlbumById,
   addPhotosToAlbum,
+  updateAlbum,
   deleteAlbum,
 } from "../controllers/albumController.js";
 
@@ -15,6 +16,8 @@ router.get("/:id", getAlbumById);
 
 router.post("/", upload.single("coverImage"), createAlbum);
 router.post("/:id/photos", upload.array("photos", 30), addPhotosToAlbum);
+
+router.put("/:id", upload.single("coverImage"), updateAlbum);
 
 router.delete("/:id", deleteAlbum);
 

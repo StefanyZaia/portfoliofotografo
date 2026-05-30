@@ -6,6 +6,7 @@ import {
   deleteAlbum,
   deletePhoto,
   getAlbums,
+  updateAlbum,
 } from "../services/api";
 
 function Admin() {
@@ -15,6 +16,8 @@ function Admin() {
   const [enviandoFotos, setEnviandoFotos] = useState(false);
   const [erro, setErro] = useState("");
   const [albumFotosId, setAlbumFotosId] = useState("");
+  const [albumEditando, setAlbumEditando] = useState(null);
+  const [formKey, setFormKey] = useState(0);
 
   const [form, setForm] = useState({
     titulo: "",
@@ -40,6 +43,43 @@ function Admin() {
     navigate("/admin/login");
   }
 
+  function limparFormularioAlbum() {
+    setForm({
+      titulo: "",
+      data: "",
+      local: "",
+      descricao: "",
+      capa: null,
+    });
+
+    setAlbumEditando(null);
+    setFormKey((previousKey) => previousKey + 1);
+  }
+
+  function iniciarEdicao(album) {
+    setErro("");
+    setAlbumEditando(album);
+
+    setForm({
+      titulo: album.title,
+      data: album.date,
+      local: album.location,
+      descricao: album.description,
+      capa: null,
+    });
+
+    setFormKey((previousKey) => previousKey + 1);
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }
+
+  function cancelarEdicao() {
+    limparFormularioAlbum();
+  }
+
   async function carregarAlbuns() {
     try {
       setErro("");
@@ -59,12 +99,10 @@ function Admin() {
   async function handleSubmit(event) {
     event.preventDefault();
 
-    if (!form.capa) {
+    if (!albumEditando && !form.capa) {
       setErro("Selecione uma imagem de capa para o álbum.");
       return;
     }
-
-    const formElement = event.currentTarget;
 
     try {
       setSalvando(true);
@@ -76,23 +114,22 @@ function Admin() {
       albumFormData.append("date", form.data);
       albumFormData.append("location", form.local);
       albumFormData.append("description", form.descricao);
-      albumFormData.append("coverImage", form.capa);
 
-      await createAlbum(albumFormData);
+      if (form.capa) {
+        albumFormData.append("coverImage", form.capa);
+      }
 
-      setForm({
-        titulo: "",
-        data: "",
-        local: "",
-        descricao: "",
-        capa: null,
-      });
+      if (albumEditando) {
+        await updateAlbum(albumEditando.id, albumFormData);
+      } else {
+        await createAlbum(albumFormData);
+      }
 
-      formElement.reset();
+      limparFormularioAlbum();
 
       await carregarAlbuns();
     } catch (error) {
-      setErro(error.message || "Erro ao cadastrar álbum.");
+      setErro(error.message || "Erro ao salvar álbum.");
     } finally {
       setSalvando(false);
     }
@@ -150,6 +187,15 @@ function Admin() {
     try {
       setErro("");
       await deleteAlbum(id);
+
+      if (String(albumFotosId) === String(id)) {
+        setAlbumFotosId("");
+      }
+
+      if (albumEditando && String(albumEditando.id) === String(id)) {
+        limparFormularioAlbum();
+      }
+
       await carregarAlbuns();
     } catch (error) {
       setErro("Erro ao excluir álbum.");
@@ -200,8 +246,14 @@ function Admin() {
 
       <section className="adminContent">
         <div className="adminForms">
-          <form className="albumForm" onSubmit={handleSubmit}>
-            <h2>Cadastrar novo álbum</h2>
+          <form key={formKey} className="albumForm" onSubmit={handleSubmit}>
+            <h2>{albumEditando ? "Editar álbum" : "Cadastrar novo álbum"}</h2>
+
+            {albumEditando && (
+              <p className="adminEmpty">
+                Você está editando: <strong>{albumEditando.title}</strong>
+              </p>
+            )}
 
             <input
               type="text"
@@ -232,8 +284,14 @@ function Admin() {
               onChange={(e) =>
                 setForm({ ...form, capa: e.target.files[0] || null })
               }
-              required
+              required={!albumEditando}
             />
+
+            {albumEditando && (
+              <p className="adminEmpty">
+                Deixe a capa em branco caso não queira trocar a imagem atual.
+              </p>
+            )}
 
             <textarea
               placeholder="Descrição do álbum"
@@ -243,8 +301,22 @@ function Admin() {
             />
 
             <button type="submit" disabled={salvando}>
-              {salvando ? "Salvando..." : "Cadastrar álbum"}
+              {salvando
+                ? "Salvando..."
+                : albumEditando
+                  ? "Salvar alterações"
+                  : "Cadastrar álbum"}
             </button>
+
+            {albumEditando && (
+              <button
+                type="button"
+                className="cancelButton"
+                onClick={cancelarEdicao}
+              >
+                Cancelar edição
+              </button>
+            )}
           </form>
 
           <form className="albumForm" onSubmit={handleUploadPhotos}>
@@ -357,7 +429,11 @@ function Admin() {
                         Ver álbum
                       </Link>
 
-                      <button onClick={() => excluirAlbum(album.id)}>
+                      <button type="button" onClick={() => iniciarEdicao(album)}>
+                        Editar
+                      </button>
+
+                      <button type="button" onClick={() => excluirAlbum(album.id)}>
                         Excluir
                       </button>
                     </div>

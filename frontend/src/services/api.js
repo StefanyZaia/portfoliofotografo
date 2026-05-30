@@ -53,3 +53,12 @@ export async function deletePhoto(id) {
 
   return handleResponse(response);
 }
+
+export async function updateAlbum(id, albumFormData) {
+  const response = await fetch(`${API_URL}/albums/${id}`, {
+    method: "PUT",
+    body: albumFormData,
+  });
+
+  return handleResponse(response);
+}

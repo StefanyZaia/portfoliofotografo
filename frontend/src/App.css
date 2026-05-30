@@ -746,3 +746,13 @@ footer p {
   cursor: pointer;
   font-weight: bold;
 }
+
+.cancelButton {
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.06);
+  color: #f5f7ff;
+  padding: 12px 18px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: bold;
+}
