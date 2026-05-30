@@ -12,6 +12,12 @@ function AlbumDetails() {
   const [erro, setErro] = useState("");
 
   useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: "auto",
+    });
+
     async function carregarAlbum() {
       try {
         const data = await getAlbumById(id);

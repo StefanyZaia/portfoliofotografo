@@ -108,7 +108,7 @@ function Home() {
                         WhatsApp
                     </a>
 
-                    <a href="mailto:jr.nacanichi.p@gmail.com">
+                    <a href="mailto:naka.archives@gmail.com">
                         E-mail
                     </a>
 
