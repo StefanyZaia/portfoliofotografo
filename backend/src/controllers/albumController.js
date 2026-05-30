@@ -275,6 +275,7 @@ export async function deleteAlbum(req, res) {
     return res.json({
       message: "Álbum excluído com sucesso.",
     });
+  
   } catch (error) {
     return res.status(500).json({
       message: "Erro ao excluir álbum.",

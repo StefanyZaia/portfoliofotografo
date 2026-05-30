@@ -5,7 +5,8 @@
   "main": "src/server.js",
   "scripts": {
     "dev": "nodemon src/server.js",
-    "start": "node src/server.js",
+    "start": "prisma db push && node src/server.js",
+    "deploy": "prisma db push",
     "create-admin": "node src/scripts/createAdmin.js"
   },
   "dependencies": {
