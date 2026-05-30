@@ -618,9 +618,10 @@ footer p {
 .albumButton {
   display: inline-block;
   margin-top: 12px;
-  border: 1px solid rgba(110, 231, 255, 0.18);
-  background: linear-gradient(135deg, #6ee7ff, #4ea8ff);
-  color: #07111f;
+  border: 1px solid rgba(255, 255, 255, 0.78);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(208, 255, 219, 0.74) 48%, rgba(99, 213, 121, 0.82));
+  color: #053a68;
   padding: 12px 18px;
   border-radius: 999px;
   text-decoration: none;
