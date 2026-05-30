@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { getAlbumById } from "../services/api";
+import { getAlbumById, getImageUrl } from "../services/api";
 
 
 // Página de detalhes de um álbum específico, mostrando suas fotos e informações
@@ -58,7 +58,7 @@ function AlbumDetails() {
   return (
     <main className="albumDetailsPage">
       <section className="albumHero">
-        <img src={album.coverImage} alt={album.title} />
+        <img src={getImageUrl(album.coverImage)} alt={album.title} />
 
         <div className="albumHeroOverlay">
           <Link to="/" className="albumBackLink">
@@ -92,7 +92,7 @@ function AlbumDetails() {
           <div className="photoGallery">
             {album.photos.map((photo) => (
               <figure className="photoItem" key={photo.id}>
-                <img src={photo.imageUrl} alt={`Foto do álbum ${album.title}`} />
+                <img src={getImageUrl(photo.imageUrl)} alt={`Foto do álbum ${album.title}`} />
               </figure>
             ))}
           </div>

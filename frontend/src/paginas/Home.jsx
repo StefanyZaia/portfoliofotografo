@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getAlbums } from "../services/api";
+import { getAlbums, getImageUrl } from "../services/api";
 
 function Home() {
     const [albuns, setAlbuns] = useState([]);
@@ -73,7 +73,7 @@ function Home() {
                     <div className="albumsGrid">
                         {albuns.map((album) => (
                             <article className="albumCard" key={album.id}>
-                                <img src={album.coverImage} alt={album.title} />
+                                <img src={getImageUrl(album.coverImage)} alt={album.title} />
 
                                 <div className="albumInfo">
                                     <span>{album.date}</span>

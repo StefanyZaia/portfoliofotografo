@@ -6,6 +6,7 @@ import {
   deleteAlbum,
   deletePhoto,
   getAlbums,
+  getImageUrl,
   updateAlbum,
 } from "../services/api";
 
@@ -385,7 +386,7 @@ function Admin() {
                 {albumSelecionado.photos.map((photo) => (
                   <div className="adminPhotoItem" key={photo.id}>
                     <img
-                      src={photo.imageUrl}
+                      src={getImageUrl(photo.imageUrl)}
                       alt={`Foto do álbum ${albumSelecionado.title}`}
                     />
 
@@ -410,7 +411,7 @@ function Admin() {
             <div className="adminAlbumList">
               {albuns.map((album) => (
                 <article className="adminAlbumItem" key={album.id}>
-                  <img src={album.coverImage} alt={album.title} />
+                  <img src={getImageUrl(album.coverImage)} alt={album.title} />
 
                   <div>
                     <h3>{album.title}</h3>

@@ -1,4 +1,31 @@
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3333";
+export const API_URL = (import.meta.env.VITE_API_URL || "http://localhost:3333").replace(
+  /\/$/,
+  ""
+);
+
+export function getImageUrl(imageUrl) {
+  if (!imageUrl) {
+    return "";
+  }
+
+  if (imageUrl.startsWith("/")) {
+    return `${API_URL}${imageUrl}`;
+  }
+
+  try {
+    const url = new URL(imageUrl);
+
+    if (url.protocol === "http:" && API_URL.startsWith("https://")) {
+      const apiUrl = new URL(API_URL);
+      url.protocol = apiUrl.protocol;
+      url.host = apiUrl.host;
+    }
+
+    return url.toString();
+  } catch {
+    return imageUrl;
+  }
+}
 
 function getToken() {
   return localStorage.getItem("@portfolio:token");

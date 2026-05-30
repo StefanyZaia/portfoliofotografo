@@ -3,6 +3,10 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 function getBaseUrl(req) {
+  if (process.env.PUBLIC_API_URL) {
+    return process.env.PUBLIC_API_URL.replace(/\/$/, "");
+  }
+
   return `${req.protocol}://${req.get("host")}`;
 }
 
